@@ -1,7 +1,7 @@
 install: install-deps
 
 start:
-	heroku local -f Procfile.dev
+	heroku local -p 5555 -f Procfile.dev
 
 start-backend:
 	npm start --watch --verbose-watch

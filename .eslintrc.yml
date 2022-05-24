@@ -35,3 +35,5 @@ rules:
   functional/functional-parameters: 'off'
   functional/no-try-statement: 'off'
   functional/no-throw-statement: 'off'
+  jsx-a11y/label-has-associated-control: 'off',
+

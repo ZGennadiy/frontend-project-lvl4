@@ -1,12 +1,13 @@
+import React from 'react';
 import {
-  ErrorMessage, Field, Form, Formik,
+  ErrorMessage, Field, Form, Formik, useFormik,
 } from 'formik';
-import React, { useCallback, useMemo } from 'react';
 import { Button } from 'react-bootstrap';
 import { useLocation, useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
-import apiClient from '../../api';
-import routes from '../../routes.js';
+import { apiClient, apiRoutes } from '../../api';
+import PAGES_ROUTES from './pagesRoutes.js';
+import customHooks from '../../hooks';
 
 const validationSchema = yup.object({
   nickName: yup
@@ -20,21 +21,39 @@ const validationSchema = yup.object({
 });
 
 function LoginPage() {
-  const initialValues = useMemo(() => ({
-    nickName: '',
-    password: '',
-  }), []);
+  const { useAuth } = customHooks;
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  const onSubmit = useCallback(async (values) => {
-    console.log('!!!!', values);
-    const res = await apiClient.post(routes.loginPagePath(), values);
-    auth.logIn(res.data);
-    const { from } = location.state || { from: { pathname: routes.chatPagePath() } };
-    navigate(from);
-  }, [location, navigate]);
+  const auth = useAuth();
+
+  const formik = useFormik({
+    initialValues: {
+      nickName: '',
+      password: '',
+    },
+    onSubmit: async ({ nickName, password }) => {
+      const { data } = await apiClient.post(
+        apiRoutes.loginPath(),
+        { username: nickName, password },
+      );
+
+      auth.logIn(data);
+
+      const { from } = location.state || { from: { pathname: PAGES_ROUTES.main } };
+
+      navigate(from);
+    },
+  });
+
+  // const onSubmit = useCallback(async (values) => {
+  //   console.log('!!!!', values);
+  //   const res = await apiClient.post(routes.loginPagePath(), values);
+  //   auth.logIn(res.data);
+  //   const { from } = location.state || { from: { pathname: routes.chatPagePath() } };
+  //   navigate(from);
+  // }, [location, navigate]);
 
   return (
     <div className="container-fluid h-100">
@@ -43,11 +62,11 @@ function LoginPage() {
           <div className="card shadow-sm p-4">
             <h1>Sign in</h1>
             <Formik
-              initialValues={initialValues}
+              initialValues={formik.initialValues}
               validationSchema={validationSchema}
-              onSubmit={onSubmit}
+              onSubmit={formik.handleSubmit}
             >
-              <Form className="d-flex flex-column align-item-center">
+              <Form onChange={formik.handleChange} className="d-flex flex-column align-item-center">
                 <div className="d-flex flex-column mt-2">
                   <label htmlFor="nickName">Nick Name</label>
                   <Field

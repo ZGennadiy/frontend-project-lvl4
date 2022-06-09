@@ -1,15 +1,26 @@
 import React from 'react';
 import {
-  BrowserRouter, Route, Routes, Outlet, Navigate,
+  BrowserRouter, Route, Routes, Outlet, Navigate, useLocation,
 } from 'react-router-dom';
-import { LoginPage, MainPage, NotFoundPage } from './Presentation/pages';
+import {
+  LoginPage, MainPage, NotFoundPage, PAGES_ROUTES,
+} from './Presentation/pages';
 import { AuthProvider } from './context/Auth';
-import { useAuth } from './hooks/index.js';
-import routes from './routes.js';
+import customHooks from './hooks/index.js';
 
-function PrivatePage() {
+function PrivatePage({ isLoginPage = false }) {
+  const { useAuth } = customHooks;
   const auth = useAuth();
-  return auth.user ? <Outlet /> : <Navigate to={routes.loginPagePath()} />;
+
+  const location = useLocation();
+
+  if (isLoginPage) {
+    const { pathname } = location.state.from || { pathname: PAGES_ROUTES.main };
+
+    return auth.user ? <Navigate to={pathname} /> : <Outlet />;
+  }
+
+  return auth.user ? <Outlet /> : <Navigate to={PAGES_ROUTES.login} />;
 }
 
 function App() {
@@ -17,11 +28,13 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<PrivatePage />}>
+          <Route path={PAGES_ROUTES.main} element={<PrivatePage />}>
             <Route element={<MainPage />} />
           </Route>
-          <Route path="*" element={<NotFoundPage />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path={PAGES_ROUTES.notFound} element={<NotFoundPage />} />
+          <Route path={PAGES_ROUTES.login} element={<PrivatePage isLoginPage />}>
+            <Route element={<LoginPage />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -1,3 +1,4 @@
 import apiClient from './apiClient.js';
+import apiRoutes from './apiRoutes.js';
 
-export default apiClient;
+export { apiRoutes, apiClient };

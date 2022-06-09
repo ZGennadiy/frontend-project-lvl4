@@ -1,8 +1,8 @@
 import axios from 'axios';
-import CONFIG from './config.js';
+import { host } from './apiRoutes.js';
 
 const apiClient = axios.create({
-  baseURL: CONFIG.apiUrl,
+  baseURL: host,
   headers: {
     Accept: 'application/json',
   },

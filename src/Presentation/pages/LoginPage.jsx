@@ -47,14 +47,6 @@ function LoginPage() {
     },
   });
 
-  // const onSubmit = useCallback(async (values) => {
-  //   console.log('!!!!', values);
-  //   const res = await apiClient.post(routes.loginPagePath(), values);
-  //   auth.logIn(res.data);
-  //   const { from } = location.state || { from: { pathname: routes.chatPagePath() } };
-  //   navigate(from);
-  // }, [location, navigate]);
-
   return (
     <div className="container-fluid h-100">
       <div className="row justify-content-center align-content-center h-100">

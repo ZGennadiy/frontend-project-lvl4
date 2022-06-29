@@ -15,7 +15,7 @@ function PrivatePage({ isLoginPage = false }) {
   const location = useLocation();
 
   if (isLoginPage) {
-    const { pathname } = location.state.from || { pathname: PAGES_ROUTES.main };
+    const { pathname } = location.state?.from || { pathname: PAGES_ROUTES.main };
 
     return auth.user ? <Navigate to={pathname} /> : <Outlet />;
   }
@@ -29,12 +29,14 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path={PAGES_ROUTES.main} element={<PrivatePage />}>
-            <Route element={<MainPage />} />
+            <Route path={PAGES_ROUTES.main} element={<MainPage />} />
           </Route>
-          <Route path={PAGES_ROUTES.notFound} element={<NotFoundPage />} />
+
           <Route path={PAGES_ROUTES.login} element={<PrivatePage isLoginPage />}>
-            <Route element={<LoginPage />} />
+            <Route path={PAGES_ROUTES.login} element={<LoginPage />} />
           </Route>
+
+          <Route path={PAGES_ROUTES.notFound} element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

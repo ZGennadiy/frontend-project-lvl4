@@ -43,7 +43,7 @@ function LoginPage() {
 
       const { from } = location.state || { from: { pathname: PAGES_ROUTES.main } };
 
-      navigate(from);
+      navigate(from, { replace: true });
     },
   });
 

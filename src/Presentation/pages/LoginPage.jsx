@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   ErrorMessage, Field, Form, Formik, useFormik,
 } from 'formik';
@@ -21,6 +21,8 @@ const validationSchema = yup.object({
 });
 
 function LoginPage() {
+  const [authError, setAuthError] = useState(null);
+
   const { useAuth } = customHooks;
 
   const location = useLocation();
@@ -34,16 +36,21 @@ function LoginPage() {
       password: '',
     },
     onSubmit: async ({ nickName, password }) => {
-      const { data } = await apiClient.post(
-        apiRoutes.loginPath(),
-        { username: nickName, password },
-      );
+      setAuthError(null);
+      try {
+        const { data } = await apiClient.post(
+          apiRoutes.loginPath(),
+          { username: nickName, password },
+        );
 
-      auth.logIn(data);
+        auth.logIn(data);
 
-      const { from } = location.state || { from: { pathname: PAGES_ROUTES.main } };
+        const { from } = location.state || { from: { pathname: PAGES_ROUTES.main } };
 
-      navigate(from, { replace: true });
+        navigate(from, { replace: true });
+      } catch (e) {
+        setAuthError('Неверное имя пользователя и/или пароль');
+      }
     },
   });
 
@@ -80,6 +87,7 @@ function LoginPage() {
                   />
                   <ErrorMessage component="p" name="password" className="invalid-feedback d-block" />
                 </div>
+                {authError && <p className="invalid-feedback d-block">{authError}</p>}
                 <Button variant="outline-primary" className="mt-4 mb-4" type="submit">Sign in</Button>
               </Form>
 
